@@ -40,7 +40,7 @@
     }
 
     window.ScriptExecution = ScriptExecution;
-})()
+})();
 
 chrome.extension.onMessage.addListener(
   function(request, sender, sendResponse) {
@@ -81,7 +81,7 @@ chrome.tabs.onUpdated.addListener(
             //   .then(s => s.injectCss("css/main.css","css/spinner.css"));
 
             new ScriptExecution(tabId)
-              .executeScripts("lib/jquery-1.8.3.min.js", "scripts/lib.js", "scripts/settings.js", "scripts/storage.js", "scripts/patchpage.js")
+              .executeScripts("lib/jquery-1.8.3.min.js", "scripts/settings.js", "scripts/lib.js", "scripts/patchpage.js")
               .then(s => s.injectCss("css/main.css","css/spinner.css"));
           }
           // diff page, inject diff scripts

@@ -40,7 +40,7 @@
     }
 
     window.ScriptExecution = ScriptExecution;
-})()
+})();
 
 chrome.extension.onMessage.addListener(
   function(request, sender, sendResponse) {
@@ -75,9 +75,13 @@ chrome.tabs.onUpdated.addListener(
           // patch page, needs these scripts for diff too
           if (tab.url.match(/.*\/\d+\//)) {
             console.log("RUT DEBUG: patch page");
+            // new ScriptExecution(tabId)
+            //   .executeScripts("lib/jquery-1.8.3.min.js","scripts/lib.js","scripts/settings.js","scripts/identify.js",
+            //     "scripts/storage.js","scripts/loadQueue.js","scripts/main.js","scripts/controls.js","scripts/help.js")
+            //   .then(s => s.injectCss("css/main.css","css/spinner.css"));
+
             new ScriptExecution(tabId)
-              .executeScripts("lib/jquery-1.8.3.min.js","scripts/lib.js","scripts/settings.js","scripts/identify.js",
-                "scripts/storage.js","scripts/loadQueue.js","scripts/main.js","scripts/controls.js","scripts/help.js")
+              .executeScripts("lib/jquery-1.8.3.min.js", "scripts/settings.js", "scripts/lib.js", "scripts/patchpage.js")
               .then(s => s.injectCss("css/main.css","css/spinner.css"));
           }
           // diff page, inject diff scripts

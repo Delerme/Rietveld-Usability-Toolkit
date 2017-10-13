@@ -377,7 +377,7 @@ const frameManager = (function() {
   function _toggleFrameForColumnId(row, column, show) {
     const difflink = row.find('.' + column);
     if (difflink.length == 0) {
-      _hideFrame(row.next());
+      frameManager.hideFrame(row.next());
     } else {
       const frame = _getFrameForColumnId(row, column);
       if (frame.length > 0) {

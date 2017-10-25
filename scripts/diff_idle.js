@@ -90,7 +90,7 @@ function tagLineNumbers() {
   codelinesOld = document.querySelectorAll(domInspector.codelineOld(':not(.rb-hasLineNumber)'));
   for (var i = 0; i < codelinesOld.length; i++) {
     var line = codelinesOld[i];
-    splitCell(line, ['rb-hasLineNumber', 'rb-codelineOld'], 'rb-innerCodeNew');
+    splitCell(line, ['rb-hasLineNumber', 'rb-codelineOld'], 'rb-innerCodeOld');
   }
 }
 timingDecorator('tagLineNumbers');

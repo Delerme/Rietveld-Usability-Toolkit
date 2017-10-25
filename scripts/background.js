@@ -88,9 +88,9 @@ chrome.tabs.onUpdated.addListener(
           if (tab.url.match(/.*\/diff2?\//)) {
             console.log("RUT DEBUG: diff page");
             new ScriptExecution(tabId)
-              .executeScripts("scripts/diff_begin.js","lib/syntax/scripts/shCore.js","scripts/diff_idle.js",
-                "scripts/brush.js","scripts/syntax.js","scripts/codesearch.js")
-              .then(s => s.injectCss("css/style.css"));
+              .executeScripts("scripts/diff_begin.js","scripts/codesearch.js","lib/syntax/scripts/shCore.js", "scripts/diff_idle.js",
+                "scripts/brush.js","scripts/prism.js", "scripts/syntax.js")
+              .then(s => s.injectCss("css/style.css", "css/prism.css"));
           }
         }
       });

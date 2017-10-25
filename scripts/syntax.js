@@ -30,6 +30,8 @@ function appendCodeRow(arr, column, node) {
 function findMatches(code, brush) {
   var matches = [];
 
+  return Prism.highlight(code, Prism.languages.java);
+
   // Find all matches.
   $.map(brush.regexList, function(regexInfo) {
     var func = regexInfo.func || function(match) { return match[0] };
@@ -149,28 +151,37 @@ function findAllMatches(brush) {
   $.each(codeBlocks, function(_, bl) { bl.matches = findMatches(bl.text, brush) });
 
   for (var i = 0; i < codeBlocks.length; i++) {
-    var block = codeBlocks[i];
-    // Split matches at line breaks.
-    for (var j = 0; j < block.matches.length; j++) {
-      var match = block.matches[j];
-      var rowIdx = block.map.lowerBound(match.index + 1);
-      match.rowIndex = match.index;
-      if (rowIdx > 0) match.rowIndex -= block.map[rowIdx - 1];
-      block.rows[rowIdx].matches.push(match);
-      while (match.index + match.length > block.map[rowIdx]) {
-        var splitMatch = $.extend({}, match);
-        splitMatch.rowIndex = 0;
-        splitMatch.length = (match.index + match.length) - block.map[rowIdx];
-        rowIdx++;
-        block.rows[rowIdx].matches.push(splitMatch);
-      }
-    }
-
+    let block = codeBlocks[i];
+    let highlightedText = block.matches;
+    let lines = highlightedText.split('\n');
     for (var j = 0; j < block.rows.length; j++) {
-      var row = block.rows[j];
-      applyMatchesForRow(row);
+      block.rows[j].brushedNode = $('<span>'+lines[j]+'</span>').get(0);
     }
   }
+
+  // for (var i = 0; i < codeBlocks.length; i++) {
+  //   var block = codeBlocks[i];
+  //   // Split matches at line breaks.
+  //   for (var j = 0; j < block.matches.length; j++) {
+  //     var match = block.matches[j];
+  //     var rowIdx = block.map.lowerBound(match.index + 1);
+  //     match.rowIndex = match.index;
+  //     if (rowIdx > 0) match.rowIndex -= block.map[rowIdx - 1];
+  //     block.rows[rowIdx].matches.push(match);
+  //     while (match.index + match.length > block.map[rowIdx]) {
+  //       var splitMatch = $.extend({}, match);
+  //       splitMatch.rowIndex = 0;
+  //       splitMatch.length = (match.index + match.length) - block.map[rowIdx];
+  //       rowIdx++;
+  //       block.rows[rowIdx].matches.push(splitMatch);
+  //     }
+  //   }
+
+  //   for (var j = 0; j < block.rows.length; j++) {
+  //     var row = block.rows[j];
+  //     applyMatchesForRow(row);
+  //   }
+  // }
 }
 
 function highlightCode(brush) {

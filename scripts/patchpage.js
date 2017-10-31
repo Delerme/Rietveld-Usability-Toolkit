@@ -361,7 +361,7 @@ const frameManager = (function() {
       currFrameId = row.data().showingFrameId;
     const canHide = !show;
     if (canHide && currFrameId == frameId) {
-      _hideFrame(row);
+      frameManager.hideFrame(row);
     } else {
       _showFrame(row, frame);
     }

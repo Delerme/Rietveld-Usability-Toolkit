@@ -27,10 +27,10 @@ function appendCodeRow(arr, column, node) {
   });
 }
 
-function findMatches(code, brush) {
+function findMatches(code, language) {
   var matches = [];
 
-  return Prism.highlight(code, Prism.languages.java);
+  return Prism.highlight(code, language);
 
   // Find all matches.
   $.map(brush.regexList, function(regexInfo) {
@@ -138,7 +138,7 @@ function updateDisplayedHtml(codeBlocks) {
 }
 timingDecorator('updateDisplayedHtml')
 
-function findAllMatches(brush) {
+function findAllMatches(language) {
   // There may be matches from before, clear them.
   $.each(codeLines, function(_, line) { line.matches = []; });
 
@@ -148,7 +148,7 @@ function findAllMatches(brush) {
     .concat($.map(breaks, function(v) { return { column: 1, line: v }; }));
 
   codeBlocks = splitToBlocks(codeLines, breaks);
-  $.each(codeBlocks, function(_, bl) { bl.matches = findMatches(bl.text, brush) });
+  $.each(codeBlocks, function(_, bl) { bl.matches = findMatches(bl.text, language) });
 
   for (var i = 0; i < codeBlocks.length; i++) {
     let block = codeBlocks[i];
@@ -184,7 +184,7 @@ function findAllMatches(brush) {
   // }
 }
 
-function highlightCode(brush) {
+function highlightCode(language) {
   $(domInspector.codeTableBody()).toggleClass('syntaxhighlighter', true);
 }
 
@@ -216,10 +216,10 @@ function updateCodeLines() {
 }
 timingDecorator('updateCodeLines')
 
-function updateHighlight(brush) {
+function updateHighlight(language) {
   chrome.storage.sync.get('enableSyntaxHighlight', function(items) {
     if (items['enableSyntaxHighlight']) {
-      highlightCode(brush);
+      highlightCode(language);
     } else {
       clearHighlight();
     }
@@ -227,11 +227,11 @@ function updateHighlight(brush) {
 }
 timingDecorator('updateHighlight')
 
-function processCode(brush) {
+function processCode(language) {
   updateCodeLines();
-  findAllMatches(brush);
+  findAllMatches(language);
   updateDisplayedHtml(codeBlocks);
-  updateHighlight(brush);
+  updateHighlight(language);
 }
 
 timingDecorator('findAllMatches')
@@ -239,37 +239,30 @@ timingDecorator('findAllMatches')
 function identifyBrush() {
   var path = window.location.pathname;
   var extension = path.indexOf('.') < 0 ? '' : path.substring(path.indexOf('.') + 1);
-  var brush = null;
+  /*
   $.each(brushes, function(_, b) {
       if (b.extensions.indexOf(extension) >=0) {
         brush = b;
       }
     });
-  return brush;
+  */
+  return languages[extension];
 }
 
-var brush = identifyBrush();
+const language = identifyBrush();
 
 var highlightInitialized = false;
 function initializeHighlighting() {
-  brush.brush = new SyntaxHighlighter.brushes[brush.name]()
-  processCode(brush.brush);
-  domInspector.observeNewCodelines(function() { processCode(brush.brush); });
+  processCode(language);
+  domInspector.observeNewCodelines(function() { processCode(language); });
   chrome.storage.onChanged.addListener(function() {
-    updateHighlight(brush.brush);
+    updateHighlight(language);
   }, ['enableSyntaxHighlight']);
   highlightInitialized = true;
 }
 
-if (brush) {
-  chrome.extension.sendMessage(
-    {
-      action: 'load_script',
-      file: brush.path
-    }, function() {
-      initializeHighlighting();
-    });
-}
+initializeHighlighting();
+
 // TODO: Sometimes we get an error when initializing highlighting in an inline frame... why?
 setTimeout(function() { if (!highlightInitialized) initializeHighlighting(); }, 200);
 setTimeout(function() { if (!highlightInitialized) initializeHighlighting(); }, 400);
